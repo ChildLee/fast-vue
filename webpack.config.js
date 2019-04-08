@@ -11,7 +11,7 @@ module.exports = (env) => {
   const miniCssLoader = {
     loader: MiniCssExtractPlugin.loader,
     options: {
-      publicPath: '../',
+      publicPath: '../../',
     },
   }
   return {
