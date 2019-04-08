@@ -8,17 +8,24 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 
 module.exports = (env) => {
+  const miniCssLoader = {
+    loader: MiniCssExtractPlugin.loader,
+    options: {
+      publicPath: '../',
+    },
+  }
   return {
     mode: env ? 'production' : 'development',
-    entry: {main: path.join(__dirname, 'src', 'main.js')},
+    entry: {main: resolve('src', 'main.js')},
     output: {
-      path: path.join(__dirname, 'dist'),
-      filename: filePath('js', '[name].[chunkHash].js'),
+      publicPath: '',
+      path: resolve('dist'),
+      filename: join('js', '[name].[chunkHash].js'),
     },
     resolve: {
       extensions: ['.js', '.vue', '.css', '.scss'],
       alias: {
-        '@': path.join(__dirname, 'src'),
+        '@': resolve('src'),
       },
     },
     module: {
@@ -35,7 +42,7 @@ module.exports = (env) => {
         {
           test: /\.(sa|sc|c)ss$/,
           loader: [
-            {loader: env ? MiniCssExtractPlugin.loader : 'style-loader'},
+            env ? miniCssLoader : 'style-loader',
             {loader: 'css-loader', options: {sourceMap: true}},
             {loader: 'postcss-loader', options: {sourceMap: true}},
             {loader: 'sass-loader', options: {implementation: sass}},
@@ -46,7 +53,7 @@ module.exports = (env) => {
           loader: 'url-loader',
           options: {
             limit: 10000, // 小于limit字节转为base64，大于则进行copy
-            name: filePath('image', '[name].[hash:8].[ext]'),
+            name: join('image', '[name].[hash:8].[ext]'),
           },
         },
         {
@@ -54,7 +61,7 @@ module.exports = (env) => {
           loader: 'url-loader',
           options: {
             limit: 10000, // 小于limit字节转为base64，大于则进行copy
-            name: filePath('media', '[name].[hash:8].[ext]'),
+            name: join('media', '[name].[hash:8].[ext]'),
           },
         },
         {
@@ -62,7 +69,7 @@ module.exports = (env) => {
           loader: 'url-loader',
           options: {
             limit: 10000, // 小于limit字节转为base64，大于则进行copy
-            name: filePath('font', '[name].[hash:8].[ext]'),
+            name: join('font', '[name].[hash:8].[ext]'),
           },
         },
       ],
@@ -73,7 +80,7 @@ module.exports = (env) => {
       new CompressionWebpackPlugin(),
       new HtmlWebpackPlugin({template: 'index.html'}),
       new CopyWebpackPlugin([{from: 'static', to: 'static', ignore: '.*'}]),
-      new MiniCssExtractPlugin({filename: filePath('css', '[name].[contentHash].css')}),
+      new MiniCssExtractPlugin({filename: join('css', '[name].[contentHash].css')}),
     ],
     stats: {
       modules: false,
@@ -87,6 +94,10 @@ module.exports = (env) => {
   }
 }
 
-function filePath(...file) {
-  return path.join('static', ...file)
+function resolve(...file) {
+  return path.posix.join(__dirname, ...file)
+}
+
+function join(...file) {
+  return path.posix.join('static', ...file)
 }
