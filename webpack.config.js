@@ -7,13 +7,12 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
 
+const miniCssLoader = {
+  loader: MiniCssExtractPlugin.loader,
+  options: {publicPath: '../../'},
+}
+
 module.exports = (env) => {
-  const miniCssLoader = {
-    loader: MiniCssExtractPlugin.loader,
-    options: {
-      publicPath: '../../',
-    },
-  }
   return {
     mode: env ? 'production' : 'development',
     entry: {main: resolve('src', 'main.js')},
